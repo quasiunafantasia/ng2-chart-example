@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
-import Chart from 'chart.js';
+import { Chart } from 'chart.js';
 
 @Component({
   selector: 'app-chart',
@@ -13,12 +13,17 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input() dataSet2: [number, number, number, number, number, number, number];
   @ViewChild('chart') chartElement;
 
-  private chart: any;
+  private chart: Chart.Radar;
 
   private chartSettings = {
     type: 'radar',
     data: {
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+    },
+    options: {
+      legend: {
+        display: false,
+      }
     }
   };
 
@@ -55,7 +60,6 @@ export class ChartComponent implements OnInit, OnChanges {
         ];
         this.chart.update();
       } else {
-        console.log('creating')
         this.chart = new Chart(this.chartElement.nativeElement, {
           ...this.chartSettings,
           data: {
