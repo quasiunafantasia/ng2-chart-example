@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, Input, OnChanges, OnInit, ViewChild} from '@angular/core';
 import Chart from 'chart.js';
 
 @Component({
@@ -7,34 +7,73 @@ import Chart from 'chart.js';
   styleUrls: ['./chart.component.css'],
   styles: [':host { display: block; }']
 })
-export class ChartComponent implements OnInit, AfterViewInit {
+export class ChartComponent implements OnInit, OnChanges {
 
-  constructor() { }
+  @Input() dataSet1: [number, number, number, number, number, number, number];
+  @Input() dataSet2: [number, number, number, number, number, number, number];
+  @ViewChild('chart') chartElement;
 
-  @ViewChild('chart') chart;
+  private chart: any;
+
+  private chartSettings = {
+    type: 'radar',
+    data: {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+    }
+  };
+
+  private dataSet1Settings = {
+    label: 'My First dataset',
+    borderColor: 'rgb(255, 99, 132)',
+    fill: false
+  };
+
+  private dataSet2Settings = {
+    label: 'My Second dataset',
+    fill: false,
+    borderColor: 'rgb(123, 4, 56)'
+  };
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
-  ngAfterViewInit() {
-    const chart = new Chart(this.chart.nativeElement, {
-      type: 'radar',
-      data: {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
-        datasets: [{
-          label: "My First dataset",
-          borderColor: 'rgb(255, 99, 132)',
-          fill:false,
-          data: [5, 10, 5, 2, 20, 30, 45],
-        },
+  ngOnChanges() {
+    if (this.dataSet1 || this.dataSet2) {
+      if (this.chart) {
+        this.chart.data.datasets = [
           {
-            label: "My Second dataset",
-            fill:false,
-            borderColor: 'rgb(123, 4, 56)',
-            data: [10, 6, 15, 22, 30, 3, 5],
-          }]
-      },
-    });
+            ...this.dataSet1Settings,
+            data: this.dataSet1 || []
+          },
+          {
+            ...this.dataSet2Settings,
+            data: this.dataSet2 || []
+          }
+        ];
+        this.chart.update();
+      } else {
+        console.log('creating')
+        this.chart = new Chart(this.chartElement.nativeElement, {
+          ...this.chartSettings,
+          data: {
+            ...this.chartSettings.data,
+            datasets: [
+              {
+                ...this.dataSet1Settings,
+                data: this.dataSet1 || []
+              },
+              {
+                ...this.dataSet2Settings,
+                data: this.dataSet2 || []
+              }
+            ]
+          }
+        });
+      }
+    }
   }
 
 }
